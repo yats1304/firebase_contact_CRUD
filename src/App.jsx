@@ -2,45 +2,61 @@ import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import { FiSearch } from "react-icons/fi";
 import { AiFillPlusCircle } from "react-icons/ai";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, onSnapshot } from "firebase/firestore";
 import { db } from "./config/firebase";
-import { HiOutlineUserCircle } from "react-icons/hi";
-import { IoMdTrash } from "react-icons/io";
-import { RiEditCircleLine } from "react-icons/ri";
 import ContactCard from "./components/ContactCard";
-import Modal from "./components/Modal";
 import AddAndUpdateContact from "./components/AddAndUpdateContact";
+import useDisclose from "./hooks/useDisclose";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import NotFoundContact from "./components/NotFoundContact";
 
 const App = () => {
   const [contacts, setContacts] = useState([]);
-  const [isOpen, setOpen] = useState(false);
-
-  const onOpen = () => {
-    setOpen(true);
-  };
-
-  const onClose = () => {
-    setOpen(false);
-  };
+  const { isOpen, onClose, onOpen } = useDisclose();
 
   useEffect(() => {
     const getContact = async () => {
       try {
         const contactsRef = collection(db, "contacts");
-        const contactsSnapshot = await getDocs(contactsRef);
-        const contactList = contactsSnapshot.docs.map((doc) => {
-          return {
-            id: doc.id,
-            ...doc.data(),
-          };
+
+        onSnapshot(contactsRef, (snapshot) => {
+          const contactList = snapshot.docs.map((doc) => {
+            return {
+              id: doc.id,
+              ...doc.data(),
+            };
+          });
+          setContacts(contactList);
+          return contactList;
         });
-        setContacts(contactList);
       } catch (error) {
         console.error(error);
       }
     };
     getContact();
   }, []);
+
+  const filterContacts = (e) => {
+    const value = e.target.value;
+
+    const contactsRef = collection(db, "contacts");
+
+    onSnapshot(contactsRef, (snapshot) => {
+      const contactList = snapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
+
+      const filteredContacts = contactList.filter((contact) =>
+        contact.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setContacts(filteredContacts);
+      return filteredContacts;
+    });
+  };
 
   return (
     <>
@@ -50,6 +66,7 @@ const App = () => {
           <div className="relative flex items-center flex-grow">
             <FiSearch className="ml-1.5 absolute text-3xl text-white" />
             <input
+              onChange={filterContacts}
               type="text"
               className="h-10 flex-grow bg-transparent border border-white rounded-md
           text-white pl-10"
@@ -61,12 +78,17 @@ const App = () => {
           />
         </div>
         <div className="mt-4 gap-3 flex flex-col">
-          {contacts.map((contact) => (
-            <ContactCard key={contact.id} contact={contact} />
-          ))}
+          {contacts.length <= 0 ? (
+            <NotFoundContact />
+          ) : (
+            contacts.map((contact) => (
+              <ContactCard key={contact.id} contact={contact} />
+            ))
+          )}
         </div>
       </div>
       <AddAndUpdateContact onClose={onClose} isOpen={isOpen} />
+      <ToastContainer position="bottom-center" />
     </>
   );
 };
