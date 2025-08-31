@@ -15,14 +15,21 @@ A responsive React application for managing contacts with real-time Firebase Fir
 
 ---
 
-## Screenshots
+## 📸 Screenshots
 
-![Contact List](https://github.com/user-attachments/assets/b8919368-0d30-443d-82c8-8687abbfede8)  
-*View all contacts and search*
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b8919368-0d30-443d-82c8-8687abbfede8" alt="Contact List" width="600"/>
+  <br/>
+  <em>View all contacts and search</em>
+</p>
 
-![Add Contact Modal](https://github.com/user-attachments/assets/bec0cbe2-a4ba-416d-8c4e-c76f7eef8f7a)  
-*Add or update a contact*
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/bec0cbe2-a4ba-416d-8c4e-c76f7eef8f7a" alt="Add Contact Modal" width="400"/>
+  <br/>
+  <em>Add or update a contact</em>
+</p>
 
+---
 
 ## Installation
 
